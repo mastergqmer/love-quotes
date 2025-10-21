@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Love Quotes — For Her</title>
+<meta name="description" content="A little app full of love notes: 101 I-love-you quotes. Open on your phone and add to Home Screen."/>
+<style>
+  :root{--bg1:#ff9a9e;--bg2:#fecfef;--accent:#ff5768;--glass:rgba(255,255,255,0.18);}
+  *{box-sizing:border-box}html,body{height:100%}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:linear-gradient(135deg,var(--bg1),var(--bg2));display:flex;align-items:center;justify-content:center;padding:20px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
+  .app{width:100%;max-width:720px;background:linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06));border-radius:18px;padding:18px;box-shadow:0 8px 30px rgba(0,0,0,0.18);color:#111;backdrop-filter:blur(8px)}
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  h1{margin:0;font-size:1.05rem;color:#fff}
+  .sub{font-size:0.8rem;color:rgba(255,255,255,0.9)}
+  .card{margin-top:16px;background:linear-gradient(180deg, rgba(255,255,255,0.95), #fff);border-radius:14px;padding:22px;min-height:260px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;position:relative}
+  .quote{font-size:1.3rem;line-height:1.35;color:#111;padding:0 6px;font-weight:600}
+  .author{margin-top:12px;font-size:0.85rem;color:#666}
+  .controls{display:flex;gap:8px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+  button{border:0;background:var(--accent);color:white;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:600;box-shadow:0 6px 18px rgba(0,0,0,0.12)}
+  button.secondary{background:transparent;color:white;border:1px solid rgba(255,255,255,0.18)}
+  .small{padding:8px 10px;border-radius:8px;font-size:0.95rem}
+  .footer{display:flex;justify-content:space-between;align-items:center;margin-top:14px;color:rgba(255,255,255,0.9)}
+  .fav-toggle{position:absolute;top:14px;right:14px;background:var(--glass);padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,0.25);cursor:pointer}
+  .counter{position:absolute;left:14px;top:14px;color:rgba(0,0,0,0.6);background:transparent;padding:6px 8px;border-radius:8px;font-weight:600}
+  .random-badge{position:absolute;left:50%;transform:translateX(-50%);bottom:-16px;background:#fff;color:#222;padding:8px 12px;border-radius:18px;box-shadow:0 12px 28px rgba(0,0,0,0.12)}
+  #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:22px;background:rgba(0,0,0,0.8);color:#fff;padding:10px 14px;border-radius:999px;display:none}
+  @media (max-width:420px){.quote{font-size:1.05rem}.card{padding:18px;min-height:220px}}
+  /* QR preview popup */
+  .qr-popup{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:white;padding:14px;border-radius:12px;box-shadow:0 20px 40px rgba(0,0,0,0.25);display:none;z-index:40;text-align:center}
+  .qr-popup img{max-width:260px;height:auto}
+  .qr-close{display:block;margin-top:8px;background:#eee;color:#333;border:0;padding:8px 10px;border-radius:8px;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="app" role="application" aria-label="Love Quotes app">
+  <header>
+    <div>
+      <h1>Love Notes ❤️</h1>
+      <div class="sub">Open on your phone and add to Home Screen</div>
+    </div>
+    <div style="text-align:right">
+      <button id="notifyBtn" class="small secondary">Enable Reminders</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="card" id="card">
+      <div class="counter" id="counter">1 / 101</div>
+      <button class="fav-toggle" id="favBtn" title="Favorite">♡</button>
+      <div class="quote" id="quote">Loading...</div>
+      <div class="author" id="author">— For you</div>
+      <div class="random-badge" id="randomBadge" style="display:none">Shuffled</div>
+    </div>
+
+    <div class="controls">
+      <button id="prev" class="small secondary">⬅ Prev</button>
+      <button id="next" class="small">Next ➡</button>
+      <button id="random" class="small secondary">Random ✨</button>
+      <button id="share" class="small">Share 🔗</button>
+      <button id="download" class="small secondary">Download Image ⤓</button>
+      <button id="favorites" class="small">Favorites ★</button>
+      <button id="makeQR" class="small secondary">Make QR for this page</button>
+    </div>
+
+    <div class="footer">
+      <div style="font-size:0.9rem;color:rgba(255,255,255,0.95)">101 loving lines — handpicked</div>
+      <div style="font-size:0.85rem;color:rgba(255,255,255,0.95)">Tip: use "Share" on phone to send quickly</div>
+    </div>
+  </main>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<!-- QR popup -->
+<div id="qrPopup" class="qr-popup" role="dialog" aria-modal="true">
+  <div style="font-weight:600;margin-bottom:8px">Scan to open this page</div>
+  <img id="qrImg" alt="QR code" src="" />
+  <button id="qrClose" class="qr-close">Close</button>
+</div>
+
+<script>
+/* ====== QUOTES (101) ====== */
+const QUOTES = [
+  "I love you till the ends of the earth.",
+  "I love you more than there are stars in the sky.",
+  "Every day with you is my favorite day.",
+  "You are my today and all of my tomorrows.",
+  "My heart is yours, now and forever.",
+  "I love you to the moon and back — and then further.",
+  "You're the chapter I never want to end.",
+  "When I count my blessings, I count you twice.",
+  "With you, I have everything I ever wanted.",
+  "You make ordinary moments feel like magic.",
+  "You are the melody to every love song I hear.",
+  "I fall for you a little more every single day.",
+  "Your smile is my sunrise and your hug my sunset.",
+  "You are my anchor and my wildest adventure.",
+  "My favorite place is right next to you.",
+  "I choose you. Over and over, without pause.",
+  "You turn my can'ts into can's and my dreams into plans.",
+  "I love you in ways I didn't know existed.",
+  "You are my heart's home.",
+  "I would find you in any lifetime.",
+  "You are my peace and my favorite chaos.",
+  "Forever isn't long enough with you.",
+  "If I had a flower for every time I thought of you, I'd walk in a garden forever.",
+  "Your love is the compass by which I steer my life.",
+  "I love the you that you are and the you you're becoming.",
+  "You are my reason to believe in forever.",
+  "Every moment with you is a beautiful note in our song.",
+  "I love you more than yesterday but less than tomorrow.",
+  "You make my soul feel like sunshine.",
+  "To the world you may be one person, but to me you are the world.",
+  "My heart whispers your name when the world is quiet.",
+  "You're the dream I never want to wake from.",
+  "Loving you feels like coming home.",
+  "You are the best part of my every day.",
+  "I still get butterflies when I think of you.",
+  "I love you with everything I am and everything I'll ever be.",
+  "Your laugh is my favorite sound.",
+  "Being with you feels like being exactly where I'm supposed to be.",
+  "I love you more than coffee — and that's saying a lot.",
+  "You are the light that makes my life beautiful.",
+  "I would cross oceans just to hold your hand.",
+  "You are my favorite hello and hardest goodbye.",
+  "If kisses were raindrops I'd send you a storm.",
+  "You are the smile my heart wears.",
+  "With every breath I take I love you more.",
+  "Because of you, I look forward to the future.",
+  "You make my heart a better place.",
+  "You're my partner, my love, and my best friend.",
+  "You are the story I want to tell forever.",
+  "I love you beyond words, beyond time, beyond everything.",
+  "Your happiness is my favorite mission.",
+  "I love the way your hand fits in mine.",
+  "You are my constant in a changing world.",
+  "I love you fiercely and gently at once.",
+  "I will always have your back and your heart.",
+  "When I say I love you, I mean everything in me loves everything in you.",
+  "Every love story is beautiful, but ours is my favorite.",
+  "Your presence makes all things brighter.",
+  "I want to grow old with you and laugh at every grey hair.",
+  "I love you simply, without complexities or conditions.",
+  "You're the spark in the simplest moments.",
+  "I carry you in my heart wherever I go.",
+  "I love you like the stars love the night.",
+  "You are the comfort I crave after a long day.",
+  "My favorite place to be is wherever you are.",
+  "Your love is the map to my happiness.",
+  "I love you for your heart, your kindness, and your courage.",
+  "You're the first thought in the morning and the last at night.",
+  "I love you like a poem loves its rhythm.",
+  "Your arms are my favorite place to be safe.",
+  "I love you more than I ever thought possible.",
+  "Your love colors my world in the brightest hues.",
+  "I promise to be your calm and your storm.",
+  "I love you with a love that can't be measured.",
+  "You're my forever and my always.",
+  "With you, even silence is sweet.",
+  "I love the way you see the world and invite me in.",
+  "Your joy is my favorite reward.",
+  "I adore every version of you — past, present, and future.",
+  "You are my favorite person to do nothing with.",
+  "You make my ordinary life extraordinary.",
+  "I love you in little ways and big ways and every way between.",
+  "My heart is more full because of you.",
+  "You are my sunrise, my starlight, my everything.",
+  "I am yours — completely and without reservation.",
+  "You are the answer to every prayer I ever whispered.",
+  "I love you for all that you are, all that you have been, and all you're yet to be.",
+  "You are the whisper of forever in the rush of now.",
+  "I love you—simple, steady, and strong.",
+  "You're the reason I believe in magic."
+];
+
+/* ====== STATE & UI ====== */
+let index = 0;
+const favorites = new Set(JSON.parse(localStorage.getItem('love_favs') || '[]') || []);
+let shuffled = false;
+
+const elQuote = document.getElementById('quote');
+const elAuthor = document.getElementById('author');
+const elCounter = document.getElementById('counter');
+const btnNext = document.getElementById('next');
+const btnPrev = document.getElementById('prev');
+const btnRandom = document.getElementById('random');
+const btnShare = document.getElementById('share');
+const btnDownload = document.getElementById('download');
+const btnFav = document.getElementById('favBtn');
+const btnFavorites = document.getElementById('favorites');
+const toast = document.getElementById('toast');
+const notifyBtn = document.getElementById('notifyBtn');
+const randomBadge = document.getElementById('randomBadge');
+
+function render(){
+  elQuote.textContent = QUOTES[index];
+  elAuthor.textContent = "— For you";
+  elCounter.textContent = `${index+1} / ${QUOTES.length}`;
+  btnFav.textContent = favorites.has(index) ? '♥' : '♡';
+  btnFav.style.color = favorites.has(index) ? '#ff2f5a' : '#222';
+  randomBadge.style.display = shuffled ? 'block' : 'none';
+}
+function showToast(msg, ms=1800){
+  toast.textContent = msg; toast.style.display='block';
+  clearTimeout(toast.timeout); toast.timeout = setTimeout(()=> toast.style.display='none', ms);
+}
+
+/* NAV */
+btnNext.addEventListener('click', ()=> { index = (index+1) % QUOTES.length; shuffled=false; render(); });
+btnPrev.addEventListener('click', ()=> { index = (index-1 + QUOTES.length) % QUOTES.length; shuffled=false; render(); });
+btnRandom.addEventListener('click', ()=> {
+  index = Math.floor(Math.random()*QUOTES.length); shuffled = true; render(); showToast('Surprise quote ✨');
+});
+
+/* FAVORITES */
+btnFav.addEventListener('click', ()=>{
+  if(favorites.has(index)) favorites.delete(index); else favorites.add(index);
+  localStorage.setItem('love_favs', JSON.stringify(Array.from(favorites)));
+  render(); showToast(favorites.has(index) ? 'Added to favorites ★' : 'Removed from favorites');
+});
+btnFavorites.addEventListener('click', ()=>{
+  if(favorites.size === 0) { showToast('No favorites yet — tap ♡'); return; }
+  const lines = Array.from(favorites).map(i => `${i+1}. ${QUOTES[i]}`);
+  const text = `Favorites:\n\n${lines.join('\n\n')}\n\n(Press OK to copy all)`;
+  if(confirm(text)){
+    navigator.clipboard?.writeText(lines.join('\n\n')).then(()=> showToast('Favorites copied to clipboard 😊')).catch(()=> showToast('Could not copy — try manually'));
+  }
+});
+
+/* SHARE */
+btnShare.addEventListener('click', async ()=>{
+  const text = QUOTES[index] + " — from me ❤️";
+  if(navigator.share){
+    try{ await navigator.share({text}); showToast('Shared ✨'); } catch(e){ showToast('Share cancelled'); }
+  } else {
+    const sms = `sms:&body=${encodeURIComponent(text)}`; window.location.href = sms;
+  }
+});
+
+/* DOWNLOAD IMAGE */
+btnDownload.addEventListener('click', ()=>{
+  const padding = 60; const width = 1200, height = 1200;
+  const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  const g = ctx.createLinearGradient(0,0,width,height); g.addColorStop(0,'#ff9a9e'); g.addColorStop(1,'#fecfef');
+  ctx.fillStyle = g; ctx.fillRect(0,0,width,height);
+  ctx.fillStyle = 'rgba(255,255,255,0.12)'; ctx.fillRect(0,0,width,height);
+  ctx.fillStyle = '#111'; ctx.textAlign = 'center';
+  const maxWidth = width - padding*2;
+  wrapText(ctx, QUOTES[index], width/2, height/2 - 20, maxWidth, 56, '600 56px Inter, Arial');
+  ctx.font = '400 28px Inter, Arial'; ctx.fillStyle = '#333'; ctx.fillText('— For you', width/2, height - 120);
+  const url = canvas.toDataURL('image/png'); const a = document.createElement('a'); a.href = url; a.download = `love-quote-${index+1}.png`; document.body.appendChild(a); a.click(); a.remove();
+  showToast('Image downloaded');
+});
+function wrapText(ctx, text, x, y, maxWidth, lineHeight, font){
+  ctx.font = font; const words = text.split(' '); let line = ''; let currentY = y;
+  for(let n=0;n<words.length;n++){ const testLine = line + words[n] + ' '; const testWidth = ctx.measureText(testLine).width;
+    if(testWidth > maxWidth && n>0){ ctx.fillText(line.trim(), x, currentY); line = words[n] + ' '; currentY += lineHeight; } else line = testLine;
+  } if(line) ctx.fillText(line.trim(), x, currentY);
+}
+
+/* notifications (optional) */
+let notifyIntervalId = null;
+notifyBtn.addEventListener('click', async ()=>{
+  if(!('Notification' in window)){ showToast('Notifications not supported'); return; }
+  if(Notification.permission === 'granted'){ startReminders(); showToast('Reminders enabled'); }
+  else if(Notification.permission !== 'denied'){ const perm = await Notification.requestPermission(); if(perm==='granted'){ startReminders(); showToast('Reminders enabled'); } else showToast('Permission denied'); }
+  else showToast('Notifications blocked — change in settings');
+});
+function startReminders(){ if(notifyIntervalId) clearInterval(notifyIntervalId); showNotification(QUOTES[index]); notifyIntervalId = setInterval(()=> showNotification(randomQuoteText()), 4*60*60*1000); }
+function showNotification(text){ try{ const n = new Notification('A little love ✨',{ body:text }); n.onclick = ()=> window.focus(); }catch(e){ console.warn(e); } }
+function randomQuoteText(){ return QUOTES[Math.floor(Math.random()*QUOTES.length)]; }
+
+/* swipe and keyboard */
+let startX=null; const card=document.getElementById('card');
+card.addEventListener('touchstart', e=> startX = e.changedTouches[0].clientX);
+card.addEventListener('touchend', e=>{ const dx = e.changedTouches[0].clientX - startX; if(dx>40) btnPrev.click(); else if(dx<-40) btnNext.click(); });
+document.addEventListener('keydown', e=>{ if(e.key==='ArrowRight') btnNext.click(); if(e.key==='ArrowLeft') btnPrev.click(); });
+
+card.addEventListener('dblclick', ()=>{ navigator.clipboard?.writeText(QUOTES[index]).then(()=> showToast('Copied ❤️')); });
+
+/* QR generation using a free public API (for convenience) */
+const makeQRBtn = document.getElementById('makeQR');
+const qrPopup = document.getElementById('qrPopup');
+const qrImg = document.getElementById('qrImg');
+const qrClose = document.getElementById('qrClose');
+
+makeQRBtn.addEventListener('click', ()=>{
+  // Use the current page URL. IMPORTANT: this will be the file:// URL if opened locally.
+  // For a publicly shareable QR, host the file and open the hosted URL, then press "Make QR for this page".
+  const url = window.location.href;
+  // Simple QR via goqr.me API (no auth) — fine for small personal use.
+  // If you want higher privacy use an offline QR generator (see instructions).
+  const api = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(url);
+  qrImg.src = api;
+  qrPopup.style.display = 'block';
+});
+qrClose.addEventListener('click', ()=> qrPopup.style.display='none');
+
+/* init */
+function init(){ render();
+  if(/Mobi|Android|iPhone/i.test(navigator.userAgent) && !localStorage.getItem('visited_love_app')){ showToast('Tip: Add to Home Screen for quick access ✨',3000); localStorage.setItem('visited_love_app','1'); }
+}
+init();
+</script>
+</body>
+</html>
